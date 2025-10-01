@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Cryptography.X509Certificates;
+using Comandas.Api.Models;
+using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -9,17 +11,37 @@ namespace Comandas.Api.Controllers
     public class MesaController : ControllerBase
     {
         // GET: api/<MesaController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
 
-        // GET api/<MesaController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        public List<Mesa> Mesas = new List<Mesa>()
         {
-            return "value";
+             new Mesa
+             {
+                 Id = 1,
+                 NumeroMesa = 1,
+                 SituacaoMesa = (int)SituacaoMesa.Livre
+             },
+             new Mesa
+             {
+                 Id = 2,
+                 NumeroMesa = 2,
+                 SituacaoMesa = (int)SituacaoMesa.Ocupada
+             } 
+        };
+        [HttpGet]
+
+        public IResult GetMesa()
+        {
+            return Results.Ok(Mesas);
+        }
+        [HttpGet("{id}")]
+        public IResult Get(int id)
+        {
+            var Mesa = Mesas.FirstOrDefault(x => x.Id == id);
+            if (Mesa == null)
+            {
+                return Results.NotFound("Não Encontrada!");
+            }
+            return Results.Ok(Mesa);
         }
 
         // POST api/<MesaController>
