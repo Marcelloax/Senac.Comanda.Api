@@ -8,18 +8,40 @@ namespace Comandas.Api.Controllers
     [ApiController]
     public class PedidoCozinhaController : ControllerBase
     {
-        // GET: api/<PedidoCozinhaController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        List<PedidoCozinhaController> pedidosCozinha = new List<PedidoCozinhaController>()
         {
-            return new string[] { "value1", "value2" };
+            new PedidoCozinhaController
+              {
+                Id = 1,
+                Titulo = "Coxinha",
+                Descricao = "Deliciosa coxinha de frango com catupiry",
+                Preco = 5.50M,
+                PossuiPreparo = true
+             },
+             new PedidoCozinhaController
+              {
+                Id = 2,
+                Titulo = "Pastel",
+                Descricao = "Pastel de carne com queijo",
+                Preco = 4.00M,
+                PossuiPreparo = true
+                }
+         };
+        [HttpGet]
+        public IResult GetPedido()
+        {
+            return Results.Ok(pedidosCozinha);
         }
 
-        // GET api/<PedidoCozinhaController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public IResult Get(int id)
         {
-            return "value";
+            var pedidoCozinha = pedidosCozinha.FirstOrDefault(c => c.Id == id);
+            if (pedidoCozinha == null)
+            {
+                return Results.NotFound();
+            }
+            return Results.Ok(pedidoCozinha);
         }
 
         // POST api/<PedidoCozinhaController>

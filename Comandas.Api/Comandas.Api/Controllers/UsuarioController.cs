@@ -8,18 +8,34 @@ namespace Comandas.Api.Controllers
     [ApiController]
     public class UsuarioController : ControllerBase
     {
-        // GET: api/<UsuarioController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        List<string> usuarios = new List<string>()
         {
-            return new string[] { "value1", "value2" };
-        }
+            new UsuarioController
+            {
+                id = 1,
+                nome = "Admin",
+            },
+            new UsuarioController
+            {
+                id = 2,
+                nome = "Garçom",
+            }
+        };
 
-        // GET api/<UsuarioController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet]
+        public IResult GetUsuario()
         {
-            return "value";
+            return Results.Ok(Usuarios);
+        }
+        [HttpGet("{id}")]
+        public IResult Get(int id)
+        {
+            var usuario = usuarios.FirstOrDefault(u => u.Id == id);
+            if (usuario == null)
+            {
+                return Results.NotFound();
+            }
+            return Results.Ok(usuario);
         }
 
         // POST api/<UsuarioController>

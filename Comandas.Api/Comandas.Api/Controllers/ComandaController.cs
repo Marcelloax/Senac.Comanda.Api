@@ -8,22 +8,40 @@ namespace Comandas.Api.Controllers
     [ApiController]
     public class ComandaController : ControllerBase
     {
-        // GET: api/<ComandaController>
+        List<ComandaController> list = new List<ComandaController>();
+        {   new ComandaController
+            {
+                Id = 1,
+                NumeroComanda = 1,
+                SituacaoComanda = (int)SituacaoComanda.Aberta
+            },
+            new ComandaController
+            {
+                Id = 2,
+                NumeroComanda = 2,
+                SituacaoComanda = (int)SituacaoComanda.Fechada
+            }
+        };
+
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IResult GetComanda()
         {
-            return new string[] { "value1", "value2" };
+            return Results.Ok(list);
         }
 
-        // GET api/<ComandaController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public IResult Get(int id)
         {
-            return "value";
-        }
+            var comanda = list.FirstOrDefault(x => x.Id == id);
+            if (comanda == null)
+            {
+                return Results.NotFound("Não Encontrada!");
+            }
+            return Results.Ok(comanda);
+}
 
-        // POST api/<ComandaController>
-        [HttpPost]
+// POST api/<ComandaController>
+[HttpPost]
         public void Post([FromBody] string value)
         {
         }
