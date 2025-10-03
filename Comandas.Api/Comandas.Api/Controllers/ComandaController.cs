@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Comandas.Api.Models;
+using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -8,18 +9,47 @@ namespace Comandas.Api.Controllers
     [ApiController]
     public class ComandaController : ControllerBase
     {
-        List<ComandaController> list = new List<ComandaController>();
-        {   new ComandaController
+       public List<Comanda> list = new List<Comanda>()
+        {   
+            new Comanda
             {
                 Id = 1,
-                NumeroComanda = 1,
-                SituacaoComanda = (int)SituacaoComanda.Aberta
+                Itens = new List<ComandaItem>
+                {
+                    new ComandaItem
+                    {
+                        Id = 1,
+                        CardapioItemId = 1, 
+                        ComnandaItemId = 1
+                    },
+                    new ComandaItem
+                    {
+                        Id = 2,
+                       CardapioItemId = 2,
+                    }
+                },
+                NomeCliente = "João",
+                NumeroMesa = 3
             },
-            new ComandaController
+            new Comanda
             {
                 Id = 2,
-                NumeroComanda = 2,
-                SituacaoComanda = (int)SituacaoComanda.Fechada
+                Itens = new List<ComandaItem>
+                {
+                    new ComandaItem
+                    {
+                        Id = 3,
+                        CardapioItemId = 3,
+                        ComnandaItemId = 2
+                    },
+                    new ComandaItem
+                    {
+                        Id = 4,
+                        CardapioItemId = 4,
+                    }
+                },
+                NomeCliente = "Maria",
+                NumeroMesa = 5
             }
         };
 

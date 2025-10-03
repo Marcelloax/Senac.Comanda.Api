@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Comandas.Api.Models;
+using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -8,23 +9,36 @@ namespace Comandas.Api.Controllers
     [ApiController]
     public class PedidoCozinhaController : ControllerBase
     {
-        List<PedidoCozinhaController> pedidosCozinha = new List<PedidoCozinhaController>()
+       public List<PedidoCozinha> pedidosCozinha = new List<PedidoCozinha>()
         {
-            new PedidoCozinhaController
+            new PedidoCozinha
               {
                 Id = 1,
-                Titulo = "Coxinha",
-                Descricao = "Deliciosa coxinha de frango com catupiry",
-                Preco = 5.50M,
-                PossuiPreparo = true
+                ComandaId = 1,
+                Itens = new List<PedidoCozinhaItem>
+                {
+                    new PedidoCozinhaItem
+                    {
+                        Id = 1,
+                       ComandaItemId = 1,
+                       PedidoCozinhaId = 1
+
+
+                    },
+                    new PedidoCozinhaItem
+                    {
+                        Id = 2,
+                      ComandaItemId = 2,
+                      PedidoCozinhaId = 1
+
+                    }
+                }
              },
-             new PedidoCozinhaController
+             new PedidoCozinha
               {
                 Id = 2,
-                Titulo = "Pastel",
-                Descricao = "Pastel de carne com queijo",
-                Preco = 4.00M,
-                PossuiPreparo = true
+                ComandaId = 2,
+
                 }
          };
         [HttpGet]

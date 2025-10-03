@@ -11,7 +11,7 @@ namespace Comandas.Api.Controllers
     public class CardapioItemController : ControllerBase
     {
       
-        List<CardapioItem> cardapios = new List<CardapioItem>()
+        public List<CardapioItem> cardapios = new List<CardapioItem>()
         {
 
             new CardapioItem
