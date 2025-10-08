@@ -1,4 +1,5 @@
 ﻿using System.Security.Cryptography.X509Certificates;
+using Comandas.Api.DTOs;
 using Comandas.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -44,11 +45,8 @@ namespace Comandas.Api.Controllers
             return Results.Ok(Mesa);
         }
 
-        // POST api/<MesaController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
+        
+       
 
         // PUT api/<MesaController>/5
         [HttpPut("{id}")]
