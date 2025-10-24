@@ -10,65 +10,22 @@ namespace Comandas.Api.Controllers
     [ApiController]
     public class ComandaController : ControllerBase
     {
-       public List<Comanda> comandas = new List<Comanda>()
-        {   
-            new Comanda
-            {
-                Id = 1,
-                NomeCliente = "João",
-                NumeroMesa = 3,
-                Itens = new List<ComandaItem>
-                {
-                    new ComandaItem
-                    {
-                      Id = 1,
-                      CardapioItemId = 1,
-                      ComandaId = 1
-                    },
-                    new ComandaItem
-                    {
-                        Id = 2,
-                        CardapioItemId = 2,
-                        ComandaId = 2
-                    },
-                },
-               
-            },
-            new Comanda
-            {
-                Id = 2,
-                NomeCliente = "Maria",
-                NumeroMesa = 4,
-                Itens = new List<ComandaItem>
-                {
-                    new ComandaItem
-                    {
-                        Id = 3,
-                        CardapioItemId = 1,
-                        ComandaId = 2
-                    },
-                    new ComandaItem
-                    {
-                        Id = 4,
-                        CardapioItemId = 2,
-                        ComandaId = 2,
-                    },
-                },
-
-            }
-        };
-
+       public ComandasDbContext _context { get; set; }
+        // Simulando um banco de dados em memória
+       public ComandaController(ComandasDbContext context)
+        { _context = context; }
         [HttpGet]
         public IResult GetComanda()
         {
+            var comandas = _context.Comandas.ToList();
             return Results.Ok(comandas);
         }
 
         [HttpGet("{id}")]
         public IResult Get(int id)
         {
-            var comanda = comandas.FirstOrDefault(x => x.Id == id);
-            if (comanda == null)
+            var comanda = _context.Comandas;
+            if (comanda is null)
             {
                 return Results.NotFound("Não Encontrada!");
             }
@@ -87,7 +44,6 @@ namespace Comandas.Api.Controllers
                 return Results.BadRequest("A comanda deve ter pelo menos um item do cardapio");
             var novacomanda = new Comanda
             {
-                Id = comandas.Count + 1,
                 NomeCliente = comandaCreate.NomeCliente,
                 NumeroMesa = comandaCreate.NumeroMesa,
             };
@@ -97,22 +53,20 @@ namespace Comandas.Api.Controllers
             {
                 var comandaItem = new ComandaItem
                 {
-                    Id = comandaItens.Count + 1,
                     CardapioItemId = cardapioItemId,
                     ComandaId = novacomanda.Id
                 };
-                comandaItens.Add(comandaItem);
             }
-            novacomanda.Itens = comandaItens;
-            comandas.Add(novacomanda);
-            return Results.Created($"/api/comanda/{novacomanda.Id}", novacomanda); }
+            _context.Comand as.Add(novacomanda);
+            return Results.Created($"/api/comanda/{novacomanda.Id}", novacomanda); 
+        }
 
-            // PUT api/<ComandaController>/5
-            [HttpPut("{id}")]
+        // PUT api/<ComandaController>/5
+        [HttpPut("{id}")]
         public IResult Put(int id, [FromBody] ComandaUpdateRequest comandaUpdate )
         {
-            var comanda = comandas.FirstOrDefault(c => c.Id == id);
-            if (comanda == null)
+            var comanda = _context.Comandas.FirstOrDefault(c => c.Id == id);
+                if (comanda is null)
             
                 return Results.NotFound("Comanda não encontrada!");
             if (comandaUpdate.NomeCliente.Length < 3)
@@ -121,21 +75,25 @@ namespace Comandas.Api.Controllers
                 return Results.BadRequest("O numero da mesa deve ser maior que zero");
             comanda.NomeCliente = comandaUpdate.NomeCliente;
             comanda.NumeroMesa = comandaUpdate.NumeroMesa;
+                _context.SaveChanges();
 
-            return Results.NoContent();
+                return Results.NoContent();
         }
 
         // DELETE api/<ComandaController>/5
         [HttpDelete("{id}")]
         public IResult Delete(int id)
         {
-            var comanda = comandas.FirstOrDefault(c => c.Id == id);
+            var comanda = _context.Comandas.FirstOrDefault(c => c.Id == id);
             if (comanda is null)
-                return Results.NotFound("Comanda não encontrada!");
-          var removido = comandas.Remove(comanda);
-           if (removido)
+                return Results.NotFound($"Comanda do id {id} não encontrada");
+            _context.Comandas.Remove(comanda);
+            var removido = _context.SaveChanges();
+            if (removido > 0)
+            {
                 return Results.NoContent();
-                return Results.StatusCode(500);
+            } 
+            return Results.StatusCode(500);
         }
     }
 }
