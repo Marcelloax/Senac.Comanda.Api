@@ -34,7 +34,7 @@ namespace Comandas.Api.Controllers
 
         // POST api/<PedidoCozinhaController>
         [HttpPost]
-        public IResult Post([FromBody] PedidoCozinhaCreatedRequest pedidoCozinhaCreated )
+        public IResult Post([FromBody] PedidoCozinhaCreatedRequest pedidoCozinhaCreated)
         {
             if (pedidoCozinhaCreated.Itens.Count == 0)
                 return Results.BadRequest("O pedido de cozinha deve ter pelo menos um item.");
@@ -51,13 +51,13 @@ namespace Comandas.Api.Controllers
                     ComandaItemId = item.ComandaItemId,
                     PedidoCozinhaId = novoPedidoCozinha.Id
                 };
-            
+
 
                 _context.PedidoCozinhas.Add(novoPedidoCozinha);
-                return Results.Created($"/api/pedidocozinha/{novoPedidoCozinha.Id}", novoPedidoCozinha);
-
+                
             }
-
+            _context.SaveChanges();
+            return Results.Created($"/api/pedidocozinha/{novoPedidoCozinha.Id}", novoPedidoCozinha);
 
         }
 
@@ -69,7 +69,6 @@ namespace Comandas.Api.Controllers
             var pedidoCozinha = _context.PedidoCozinhas.FirstOrDefault(p => p.Id == id);
             if (pedidoCozinha is null)
              return Results.NotFound("Pedido de cozinha não encontrado!");
-            pedidoCozinha.ComandaId = pedidoCozinhaUpdate.ComandaId;
             _context.SaveChanges();
             return Results.NoContent();
         }

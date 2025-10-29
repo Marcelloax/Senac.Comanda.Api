@@ -54,10 +54,16 @@ namespace Comandas.Api.Controllers
                 var comandaItem = new ComandaItem
                 {
                     CardapioItemId = cardapioItemId,
-                    ComandaId = novacomanda.Id
+                    Comanda = novacomanda,
                 };
+                comandaItens.Add(comandaItem);
+                var cardapioItem = _context.CardapioItems
+                .FirstOrDefault(ci => ci.Id == cardapioItemId);
             }
-            _context.Comand as.Add(novacomanda);
+           
+            novacomanda.Itens = comandaItens;
+
+            _context.Comandas.Add(novacomanda);
             return Results.Created($"/api/comanda/{novacomanda.Id}", novacomanda); 
         }
 
