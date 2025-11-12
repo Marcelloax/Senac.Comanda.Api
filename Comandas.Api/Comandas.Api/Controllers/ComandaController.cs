@@ -59,12 +59,40 @@ namespace Comandas.Api.Controllers
                 comandaItens.Add(comandaItem);
                 var cardapioItem = _context.CardapioItems
                 .FirstOrDefault(ci => ci.Id == cardapioItemId);
+                if (cardapioItem!.PossuiPreparo)
+                {
+                    var pedido = new PedidoCozinha
+                    {
+                        Comanda = novacomanda,
+                    };
+                    var pedidoItem = new PedidoCozinhaItem
+                    {
+                        ComandaItem = comandaItem,
+                        PedidoCozinha = pedido,
+                    };
+                    _context.PedidoCozinhas.Add(pedido);
+                    _context.PedidoCozinhaItens.Add(pedidoItem);
+                }
             }
-           
+
             novacomanda.Itens = comandaItens;
 
             _context.Comandas.Add(novacomanda);
-            return Results.Created($"/api/comanda/{novacomanda.Id}", novacomanda); 
+            _context.SaveChanges();
+
+            var response = new ComandaCreateResponse
+            {
+                Id = novacomanda.Id,
+                NomeCliente = novacomanda.NomeCliente,
+                NumeroMesa = novacomanda.NumeroMesa,
+                Itens = novacomanda.Itens.Select(i => new ComandaItemResponse
+                {
+                    Id = i.Id,
+                    Titulo = _context.CardapioItems
+                    .First(ci => ci.Id == i.CardapioItemId).Titulo
+                }).ToList()
+            };
+            return Results.Created($"/api/comanda/{response.Id}", response);
         }
 
         // PUT api/<ComandaController>/5
@@ -73,17 +101,50 @@ namespace Comandas.Api.Controllers
         {
             var comanda = _context.Comandas.FirstOrDefault(c => c.Id == id);
                 if (comanda is null)
-            
                 return Results.NotFound("Comanda não encontrada!");
+
             if (comandaUpdate.NomeCliente.Length < 3)
                 return Results.BadRequest("O nome do cliente deve ter no minimo 3 caracteres");
+
             if (comandaUpdate.NumeroMesa <= 0)
                 return Results.BadRequest("O numero da mesa deve ser maior que zero");
+
             comanda.NomeCliente = comandaUpdate.NomeCliente;
             comanda.NumeroMesa = comandaUpdate.NumeroMesa;
+
+            foreach(var item in comandaUpdate.Itens)
+            {
+                if (item.Id > 0 && item.Remove == true)
+                {
+                    RemoverItemComanda(item.Id);
+                }
+                if (item.CardapioItemId > 0)
+                {
+                    InserirItemComanda(comanda, item.CardapioItemId);
+                }
+            }
                 _context.SaveChanges();
 
                 return Results.NoContent();
+        }
+
+        private void RemoverItemComanda(int id)
+        {
+            var comandaItem = _context.ComandaItens.FirstOrDefault(ci => ci.Id == id);
+            if (comandaItem is not null)
+            {
+                _context.ComandaItens.Remove(comandaItem);
+            }
+                
+        }
+
+        private void InserirItemComanda(Comanda comanda, int cardapioItemId)
+        {
+            _context.ComandaItens.Add(new ComandaItem
+            {
+                Comanda = comanda,
+                CardapioItemId = cardapioItemId,
+            });
         }
 
         // DELETE api/<ComandaController>/5
