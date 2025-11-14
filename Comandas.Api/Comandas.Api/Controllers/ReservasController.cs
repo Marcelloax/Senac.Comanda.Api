@@ -54,6 +54,22 @@ namespace Comandas.Api.Controllers
 
             _context.Entry(reserva).State = EntityState.Modified;
 
+            // remover a reserva da mesa original
+            var novaMesa = await _context.Mesas
+                .FirstOrDefaultAsync(m => m.NumeroMesa == reserva.NumeroMesa);
+            if (novaMesa is null)
+            {
+                return BadRequest("Mesa não encontrada.");
+                novaMesa.SituacaoMesa = (int)SituacaoMesa.Reservada;
+            }
+            // mudar a situacao para reservar a nova mesa
+            var reservaOriginal = await _context.Reservas.FirstOrDefaultAsync
+                (r => r.Id == id);
+            var numeroMesaOriginal = reservaOriginal?.NumeroMesa;
+            var mesaOriginal = await _context.Mesas
+                .FirstOrDefaultAsync(m => m.NumeroMesa == numeroMesaOriginal);
+            mesaOriginal.SituacaoMesa = (int)SituacaoMesa.Livre;
+
             try
             {
                 await _context.SaveChangesAsync();
@@ -79,6 +95,21 @@ namespace Comandas.Api.Controllers
         public async Task<ActionResult<Reserva>> PostReserva(Reserva reserva)
         {
             _context.Reservas.Add(reserva);
+
+            var mesa = await _context.Mesas
+                .FirstOrDefaultAsync(m => m.NumeroMesa == reserva.NumeroMesa);
+            if (mesa is null)
+            {
+                return BadRequest("Mesa não encontrada.");
+            }
+            if (mesa is not null)
+            {
+                if (mesa.SituacaoMesa != (int)SituacaoMesa.Livre)
+                {
+                    return BadRequest("Mesa não está disponível para reserva.");
+                }
+                mesa.SituacaoMesa = (int)SituacaoMesa.Reservada;
+            }
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetReserva", new { id = reserva.Id }, reserva);
@@ -91,8 +122,15 @@ namespace Comandas.Api.Controllers
             var reserva = await _context.Reservas.FindAsync(id);
             if (reserva == null)
             {
-                return NotFound();
+                return NotFound("Reserva não encontrada");
             }
+            var mesa = await _context.Mesas
+                .FirstOrDefaultAsync(m => m.NumeroMesa == reserva.NumeroMesa);
+            if (mesa is null)
+            {
+                return BadRequest("Mesa não encontrada.");
+            }
+            mesa.SituacaoMesa = (int)SituacaoMesa.Livre;
 
             _context.Reservas.Remove(reserva);
             await _context.SaveChangesAsync();
