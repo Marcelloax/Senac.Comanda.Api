@@ -36,7 +36,7 @@ namespace Comandas.Api.Controllers
 
         // POST api/<CardapioItemController>
         [HttpPost]
-        public IResult Post([FromBody] CardapioItemUpdateRequest cardapioItemUpdate)
+        public IResult Post([FromBody] CardapioItemCreatedRequest cardapioItemUpdate)
         {
             if (cardapioItemUpdate.Titulo.Length < 3)
                 return Results.BadRequest("O título deve ter no mínimo 3 caracteres.");
@@ -49,7 +49,8 @@ namespace Comandas.Api.Controllers
                 Titulo = cardapioItemUpdate.Titulo,
                 Descricao = cardapioItemUpdate.Descricao,
                 Preco = cardapioItemUpdate.Preco,
-                PossuiPreparo = cardapioItemUpdate.PossuiPreparo
+                PossuiPreparo = cardapioItemUpdate.PossuiPreparo,
+                CategoriaCardapioId = cardapioItemUpdate.CategoriaCardapioId
             };
 
             _context.CardapioItems.Add(novoItem);
