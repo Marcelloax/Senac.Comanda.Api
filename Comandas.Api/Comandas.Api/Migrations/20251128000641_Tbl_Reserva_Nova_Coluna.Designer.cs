@@ -3,6 +3,7 @@ using System;
 using Comandas.Api;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Comandas.Api.Migrations
 {
     [DbContext(typeof(ComandasDbContext))]
-    partial class ComandasDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251128000641_Tbl_Reserva_Nova_Coluna")]
+    partial class Tbl_Reserva_Nova_Coluna
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.21");

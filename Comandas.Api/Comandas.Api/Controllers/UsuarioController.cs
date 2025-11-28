@@ -30,7 +30,7 @@ namespace Comandas.Api.Controllers
         [HttpGet("{id}")]
         public IResult Get(int id)
         {
-            var usuario = _context.Usuarios ;
+            var usuario = _context.Usuarios;
             if (usuario is null)
             {
                 return Results.NotFound("Usuario não encontrado!");
@@ -43,16 +43,18 @@ namespace Comandas.Api.Controllers
         public IResult Post([FromBody] UsuarioCreatedRequest usuarioCreated)
         {
             if (usuarioCreated.Senha.Length < 6)
-
                 return Results.BadRequest("A senha deve ter no mínimo 6 caracteres.");
 
             if (usuarioCreated.Nome.Length < 3)
-
                 return Results.BadRequest("O nome deve ter no mínimo 3 caracteres.");
 
             if (usuarioCreated.Email.Length < 6 || !usuarioCreated.Email.Contains("@"))
-
                 return Results.BadRequest("O email deve ser valido");
+            var emailExists = _context.Usuarios
+                .FirstOrDefault(u => u.Email == usuarioCreated.Email);
+            if (emailExists is not null)
+                return Results.BadRequest("O email já está em uso.");
+
             var usuario = new Usuario
             {
                 Nome = usuarioCreated.Nome,
@@ -100,6 +102,22 @@ namespace Comandas.Api.Controllers
                 return Results.NoContent();
             }
             return Results.StatusCode(500);
+        }
+
+        //crir metodo para login
+        [HttpPost("login")]
+        public IResult Login([FromBody] LoginRequest LoginRequest)
+        {
+            var usuario = _context.Usuarios.
+                FirstOrDefault(u => 
+                u.Email == LoginRequest.Email && 
+                u.Senha == LoginRequest.Senha);
+
+            //401 - Unauthorized
+            if (usuario is null)
+                return Results.Unauthorized();
+            //200 - OK
+            return Results.Ok("Usuario autenticado");
         }
     }
 }
