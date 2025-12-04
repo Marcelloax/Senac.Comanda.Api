@@ -1,4 +1,5 @@
-﻿using Comandas.Api.DTOs;
+﻿using System.Linq.Expressions;
+using Comandas.Api.DTOs;
 using Comandas.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,7 +18,12 @@ namespace Comandas.Api.Controllers
         [HttpGet]
         public IResult GetComanda()
         {
-            var comandas = _context.Comandas.ToList();
+            var comandas = _context.Comandas.Select(c => new ComandaItemResponse
+            {
+                Id = c.Id,
+                Titulo = c.NomeCliente
+            }).ToList();
+
             return Results.Ok(comandas);
         }
 
