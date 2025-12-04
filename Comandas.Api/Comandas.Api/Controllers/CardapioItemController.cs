@@ -64,6 +64,8 @@ namespace Comandas.Api.Controllers
                 CategoriaCardapioId = cardapioItemUpdate.CategoriaCardapioId
             };
             _context.CardapioItems.Add(novoItem);
+            _context.SaveChanges();
+
             return Results.Created($"/api/cardapioitem/{novoItem.Id}", novoItem);
         }
 
@@ -109,6 +111,7 @@ namespace Comandas.Api.Controllers
             var cardapio = _context.CardapioItems;
             if (cardapio is null)
                 return Results.NotFound($"Item do cardápio ID {id} não foi encontrado!");
+            _context.CardapioItems.Remove(cardapio.First(c => c.Id == id));
 
             _context.SaveChanges();
             return Results.NoContent();

@@ -26,6 +26,15 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// criar banco de dados
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ComandasDbContext>();
+    // Garantir que o banco de dados seja criado: executa as migrações pendentes
+    await db.Database.MigrateAsync();
+}
+
 // Configura o middleware CORS
 
 

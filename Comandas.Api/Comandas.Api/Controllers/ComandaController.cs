@@ -155,7 +155,7 @@ namespace Comandas.Api.Controllers
             if (comanda is null)
                 return Results.NotFound($"Comanda do id {id} não encontrada");
             _context.Comandas.Remove(comanda);
-            var removido = _context.SaveChanges();
+            var removido =_context.SaveChanges();
             if (removido > 0)
             {
                 return Results.NoContent();
