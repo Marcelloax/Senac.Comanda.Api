@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using Comandas.Api.DTOs;
 using Comandas.Api.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -15,16 +16,47 @@ namespace Comandas.Api.Controllers
         // Simulando um banco de dados em memória
        public ComandaController(ComandasDbContext context)
         { _context = context; }
+
+        // GET: api/<ComandaController>
+
         [HttpGet]
-        public IResult GetComanda()
+
+        public IResult Get()
+
         {
-            var comandas = _context.Comandas.Select(c => new ComandaItemResponse
-            {
-                Id = c.Id,
-                Titulo = c.NomeCliente
-            }).ToList();
+
+            var comandas = _context.Comandas
+
+              .Select(c => new ComandaCreateResponse
+
+              {
+
+                  Id = c.Id,
+
+                  NomeCliente = c.NomeCliente,
+
+                  NumeroMesa = c.NumeroMesa,
+
+                  Itens = c.Itens.Select(i => new ComandaItemResponse
+
+                  {
+
+                      Id = i.Id,
+
+                      Titulo = _context.CardapioItems
+
+            .First(ci => ci.Id == i.CardapioItemId).Titulo
+
+                  }).ToList()
+
+              })
+
+              .ToList();
+           
+
 
             return Results.Ok(comandas);
+
         }
 
         [HttpGet("{id}")]
